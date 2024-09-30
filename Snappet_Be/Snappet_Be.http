@@ -4,3 +4,6 @@ GET {{Snappet_Be_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{Snappet_Be_HostAddress}}/users
+Accept: application/json

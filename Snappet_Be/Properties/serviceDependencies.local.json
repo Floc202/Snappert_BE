@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "appInsights1": {
+      "type": "appInsights.sdk",
+      "dynamicId": null
+    },
+    "apis1": {
+      "ignored": "True",
+      "type": "apis"
+    }
+  }
+}
