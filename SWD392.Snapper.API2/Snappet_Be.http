@@ -1,0 +1,7 @@
+@Snappet_Be_HostAddress = http://localhost:7132
+
+
+GET {{Snappet_Be_HostAddress}}/api/Users
+Accept: application/json
+
+###
