@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SWD392.Snappet.API.RequestModel;
 using SWD392.Snappet.API.ResponseModel;
 using SWD392.Snappet.Repository.BusinessModels;
@@ -8,6 +9,7 @@ namespace SWD392.Snappet.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly UserService _userService;
@@ -20,6 +22,12 @@ namespace SWD392.Snappet.API.Controllers
         /// <summary>
         /// Gets a list of all users.
         /// </summary>
+        /// 
+        //[HttpGet]
+        //public IActionResult GetSecureData()
+        //{
+        //    return Ok("This is protected data.");
+        //}
         [HttpGet]
         public async Task<ActionResult<List<UserResponseModel>>> GetAllUsers([FromQuery] string username = null)
         {
@@ -147,5 +155,6 @@ namespace SWD392.Snappet.API.Controllers
             await _userService.DeleteUserAsync(id);
             return NoContent();
         }
+        
     }
 }

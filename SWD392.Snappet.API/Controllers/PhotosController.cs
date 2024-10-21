@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace SWD392.Snappet.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PhotosController : ControllerBase
     {
         private readonly SWD392_SNAPPET_DBContext _context;
@@ -19,7 +21,11 @@ namespace SWD392.Snappet.API.Controllers
         {
             _context = context;
         }
-
+        //[HttpGet]
+        //public IActionResult GetSecureData()
+        //{
+        //    return Ok("This is protected data.");
+        //}
         // GET: api/Photos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Photo>>> GetPhotos()
@@ -103,5 +109,6 @@ namespace SWD392.Snappet.API.Controllers
         {
             return _context.Photos.Any(e => e.PhotoId == id);
         }
+        
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace SWD392.Snappet.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PetsController : ControllerBase
     {
         private readonly SWD392_SNAPPET_DBContext _context;
@@ -19,13 +21,18 @@ namespace SWD392.Snappet.API.Controllers
         {
             _context = context;
         }
-
+        //[HttpGet]
+        //public IActionResult GetSecureData()
+        //{
+        //    return Ok("This is protected data.");
+        //}
         // GET: api/Pets
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Pet>>> GetPets()
         {
             return await _context.Pets.ToListAsync();
         }
+        
 
         // GET: api/Pets/5
         [HttpGet("{id}")]
@@ -103,5 +110,6 @@ namespace SWD392.Snappet.API.Controllers
         {
             return _context.Pets.Any(e => e.PetId == id);
         }
+        
     }
 }
