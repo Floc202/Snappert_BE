@@ -23,12 +23,13 @@ namespace SWD392.Snappet.Service.Services
         {
             var users = await _unitOfWork.Users.GetAllAsync();
             var user = users.FirstOrDefault(u => u.Email == email);
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
 
 
             if (user == null) return null;
 
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.Password);
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, hashedPassword);
 
             // If the password doesn't match, return null
             if (!isPasswordValid)
