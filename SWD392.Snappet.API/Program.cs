@@ -66,13 +66,6 @@ builder.Services.AddEndpointsApiExplorer();
 //});
 builder.Services.AddSwaggerGen(options =>
 {
-    //options.SwaggerDoc("v1", new OpenApiInfo
-    //{
-    //    Version = "v1",
-    //    Title = "My API",
-    //    Description = "API documentation"
-    //});
-
     // Add JWT Authentication to Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -127,12 +120,12 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-};
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseDeveloperExceptionPage();
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//};
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

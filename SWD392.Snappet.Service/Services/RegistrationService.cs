@@ -29,12 +29,15 @@ namespace SWD392.Snappet.Service.Services
             }
 
             // Create a new User object
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+
             var newUser = new User
             {
                 Username = username,
                 Email = email,
-                Password = BCrypt.Net.BCrypt.HashPassword(password), // Hash the password
-                AccountType = accountType,
+                Password = hashedPassword, // Hash the password
+                //AccountType = accountType,
+                AccountType = "Standard",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };

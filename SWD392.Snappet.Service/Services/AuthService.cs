@@ -22,22 +22,18 @@ namespace SWD392.Snappet.Service.Services
         public async Task<User> AuthenticateUserAsync(string email, string password)
         {
             var users = await _unitOfWork.Users.GetAllAsync();
-            var user = users.FirstOrDefault(u => u.Email == email);
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+            var foundUser = users.FirstOrDefault(u => u.Email == email);
+            
 
-
-
-            if (user == null) return null;
-
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, hashedPassword);
-
-            // If the password doesn't match, return null
-            if (!isPasswordValid)
+            if (foundUser == null || !BCrypt.Net.BCrypt.Verify(password, foundUser.Password))
             {
-                return null;
+                return null; // Trả về null nếu không tìm thấy người dùng hoặc mật khẩu không hợp lệ
             }
-            return user;
+
+            return foundUser; // Trả về người dùng nếu xác thực thành công
         }
+
+
 
     }
 }
