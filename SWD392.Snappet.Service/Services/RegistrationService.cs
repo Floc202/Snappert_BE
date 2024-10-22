@@ -37,7 +37,7 @@ namespace SWD392.Snappet.Service.Services
                 Email = email,
                 Password = hashedPassword, // Hash the password
                 //AccountType = accountType,
-                AccountType = accountType ?? "Standard",
+                AccountType = "Standard",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
