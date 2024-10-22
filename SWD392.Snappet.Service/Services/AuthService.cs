@@ -19,25 +19,45 @@ namespace SWD392.Snappet.Service.Services
             _unitOfWork = unitOfWork;
         }
 
+        //public async Task<User> AuthenticateUserAsync(string email, string password)
+        //{
+        //    var users = await _unitOfWork.Users.GetAllAsync();
+        //    var foundUser = users.FirstOrDefault(u => u.Email == email);
+
+        //    // Kiểm tra xem người dùng có tồn tại hay không
+        //    if (foundUser == null)
+        //    {
+        //        Console.WriteLine($"User not found for email: {email}"); // Ghi lại thông tin
+        //        return null; // Nếu không tìm thấy người dùng
+        //    }
+
+        //    // Kiểm tra mật khẩu
+        //    bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password.Trim(), foundUser.Password);
+        //    if (!isPasswordValid)
+        //    {
+        //        Console.WriteLine("Invalid password entered for email: " + email); // Ghi lại thông tin
+        //        return null;
+        //    }
+
+        //    Console.WriteLine("User authenticated successfully for email: " + email); // Ghi lại thông tin
+        //    return foundUser;
+        //}
         public async Task<User> AuthenticateUserAsync(string email, string password)
         {
             var users = await _unitOfWork.Users.GetAllAsync();
-            var user = users.FirstOrDefault(u => u.Email == email);
-            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+            var foundUser = users.FirstOrDefault(u => u.Email == email);
+            Console.WriteLine($"Mật khẩu nhập vào: {password}");
+            Console.WriteLine($"Chuỗi băm lưu trữ: {foundUser.Password}");
 
-
-
-            if (user == null) return null;
-
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, hashedPassword);
-
-            // If the password doesn't match, return null
-            if (!isPasswordValid)
+            if (foundUser == null || !BCrypt.Net.BCrypt.Verify(password, foundUser.Password))
             {
-                return null;
+                return null; // Trả về null nếu không tìm thấy người dùng hoặc mật khẩu không hợp lệ
             }
-            return user;
+
+            return foundUser; // Trả về người dùng nếu xác thực thành công
         }
+
+
 
     }
 }

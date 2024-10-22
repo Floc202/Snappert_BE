@@ -45,18 +45,19 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        //=> optionsBuilder.UseSqlServer("Data Source=LAPTOP-8OR5KK86;Initial Catalog=SWD392_SNAPPET_DB;Persist Security Info=True;User ID=sa;Password=123456");
-     => optionsBuilder.UseSqlServer("Data Source=tcp:ntl-db-sql.database.windows.net,1433;Initial Catalog=SNAPPET;User Id=nguyentuanloc@ntl-db-sql;Password=123@a123A");
+        => optionsBuilder.UseSqlServer("Data Source=ntl-db-sql.database.windows.net;Initial Catalog=SNAPPET;Persist Security Info=True;User ID=nguyentuanloc;Password=123@a123A");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AdminAction>(entity =>
         {
-            entity.HasKey(e => e.ActionId).HasName("PK__Admin_Ac__FFE3F4B9F7334F80");
+            entity.HasKey(e => e.ActionId).HasName("PK__Admin_Ac__FFE3F4B98F720B9B");
 
             entity.ToTable("Admin_Actions");
 
-            entity.Property(e => e.ActionId).HasColumnName("ActionID");
+            entity.Property(e => e.ActionId)
+                .ValueGeneratedNever()
+                .HasColumnName("ActionID");
             entity.Property(e => e.ActionType)
                 .IsRequired()
                 .HasMaxLength(255)
@@ -72,16 +73,18 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
             entity.HasOne(d => d.Admin).WithMany(p => p.AdminActions)
                 .HasForeignKey(d => d.AdminId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Admin_Act__Admin__4F7CD00D");
+                .HasConstraintName("FK__Admin_Act__Admin__10566F31");
         });
 
         modelBuilder.Entity<AdminUser>(entity =>
         {
-            entity.HasKey(e => e.AdminId).HasName("PK__Admin_Us__719FE4E8055A5B21");
+            entity.HasKey(e => e.AdminId).HasName("PK__Admin_Us__719FE4E8633B85C1");
 
             entity.ToTable("Admin_Users");
 
-            entity.Property(e => e.AdminId).HasColumnName("AdminID");
+            entity.Property(e => e.AdminId)
+                .ValueGeneratedNever()
+                .HasColumnName("AdminID");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Password)
                 .IsRequired()
@@ -98,11 +101,13 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
 
         modelBuilder.Entity<Emotion>(entity =>
         {
-            entity.HasKey(e => e.EmotionId).HasName("PK__Emotion__25B02E11A8341E76");
+            entity.HasKey(e => e.EmotionId).HasName("PK__Emotion__25B02E11FA1E54B5");
 
             entity.ToTable("Emotion");
 
-            entity.Property(e => e.EmotionId).HasColumnName("EmotionID");
+            entity.Property(e => e.EmotionId)
+                .ValueGeneratedNever()
+                .HasColumnName("EmotionID");
             entity.Property(e => e.TagName)
                 .IsRequired()
                 .HasMaxLength(255)
@@ -112,9 +117,11 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAFF99BC4B6");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAF807441D2");
 
-            entity.Property(e => e.OrderId).HasColumnName("OrderID");
+            entity.Property(e => e.OrderId)
+                .ValueGeneratedNever()
+                .HasColumnName("OrderID");
             entity.Property(e => e.Details)
                 .IsRequired()
                 .HasMaxLength(255)
@@ -128,16 +135,18 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Orders__UserID__48CFD27E");
+                .HasConstraintName("FK__Orders__UserID__2A164134");
         });
 
         modelBuilder.Entity<Package>(entity =>
         {
-            entity.HasKey(e => e.PackageId).HasName("PK__Package__322035EC0DA4CBB4");
+            entity.HasKey(e => e.PackageId).HasName("PK__Package__322035ECEA3573F5");
 
             entity.ToTable("Package");
 
-            entity.Property(e => e.PackageId).HasColumnName("PackageID");
+            entity.Property(e => e.PackageId)
+                .ValueGeneratedNever()
+                .HasColumnName("PackageID");
             entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.PackageName)
                 .IsRequired()
@@ -152,16 +161,18 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
             entity.HasOne(d => d.User).WithMany(p => p.Packages)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Package__UserID__4CA06362");
+                .HasConstraintName("FK__Package__UserID__2BFE89A6");
         });
 
         modelBuilder.Entity<Payment>(entity =>
         {
-            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__9B556A5883B34D99");
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__9B556A58CB17A6EE");
 
             entity.ToTable("Payment");
 
-            entity.Property(e => e.PaymentId).HasColumnName("PaymentID");
+            entity.Property(e => e.PaymentId)
+                .ValueGeneratedNever()
+                .HasColumnName("PaymentID");
             entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
             entity.Property(e => e.PaymentDate).HasColumnType("datetime");
@@ -169,14 +180,16 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
             entity.HasOne(d => d.Order).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Payment__OrderID__5CD6CB2B");
+                .HasConstraintName("FK__Payment__OrderID__17F790F9");
         });
 
         modelBuilder.Entity<Pet>(entity =>
         {
-            entity.HasKey(e => e.PetId).HasName("PK__Pets__48E5380266CCD8AC");
+            entity.HasKey(e => e.PetId).HasName("PK__Pets__48E53802F124A572");
 
-            entity.Property(e => e.PetId).HasColumnName("PetID");
+            entity.Property(e => e.PetId)
+                .ValueGeneratedNever()
+                .HasColumnName("PetID");
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.OwnerId).HasColumnName("OwnerID");
@@ -193,21 +206,23 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
             entity.HasOne(d => d.Category).WithMany(p => p.Pets)
                 .HasForeignKey(d => d.CategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Pets__CategoryID__4222D4EF");
+                .HasConstraintName("FK__Pets__CategoryID__05D8E0BE");
 
             entity.HasOne(d => d.Owner).WithMany(p => p.Pets)
                 .HasForeignKey(d => d.OwnerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Pets__OwnerID__412EB0B6");
+                .HasConstraintName("FK__Pets__OwnerID__2B0A656D");
         });
 
         modelBuilder.Entity<PetCategory>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__Pet_Cate__19093A2BA64F4FD0");
+            entity.HasKey(e => e.CategoryId).HasName("PK__Pet_Cate__19093A2BAB29E649");
 
             entity.ToTable("Pet_Category");
 
-            entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
+            entity.Property(e => e.CategoryId)
+                .ValueGeneratedNever()
+                .HasColumnName("CategoryID");
             entity.Property(e => e.CategoryName)
                 .IsRequired()
                 .HasMaxLength(255)
@@ -221,9 +236,11 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
 
         modelBuilder.Entity<Photo>(entity =>
         {
-            entity.HasKey(e => e.PhotoId).HasName("PK__Photos__21B7B582C88CB9EE");
+            entity.HasKey(e => e.PhotoId).HasName("PK__Photos__21B7B582FE5D939A");
 
-            entity.Property(e => e.PhotoId).HasColumnName("PhotoID");
+            entity.Property(e => e.PhotoId)
+                .ValueGeneratedNever()
+                .HasColumnName("PhotoID");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.PetId).HasColumnName("PetID");
             entity.Property(e => e.PhotoUrl)
@@ -238,14 +255,16 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
             entity.HasOne(d => d.Pet).WithMany(p => p.Photos)
                 .HasForeignKey(d => d.PetId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Photos__PetID__44FF419A");
+                .HasConstraintName("FK__Photos__PetID__08B54D69");
         });
 
         modelBuilder.Entity<Post>(entity =>
         {
-            entity.HasKey(e => e.PostId).HasName("PK__Posts__AA126038CC001260");
+            entity.HasKey(e => e.PostId).HasName("PK__Posts__AA126038D11BCE92");
 
-            entity.Property(e => e.PostId).HasColumnName("PostID");
+            entity.Property(e => e.PostId)
+                .ValueGeneratedNever()
+                .HasColumnName("PostID");
             entity.Property(e => e.Content)
                 .IsRequired()
                 .HasColumnType("text");
@@ -257,39 +276,43 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
             entity.HasOne(d => d.Photo).WithMany(p => p.Posts)
                 .HasForeignKey(d => d.PhotoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Posts__PhotoID__59063A47");
+                .HasConstraintName("FK__Posts__PhotoID__14270015");
 
             entity.HasOne(d => d.PostEmotion).WithMany(p => p.Posts)
                 .HasForeignKey(d => d.PostEmotionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Posts__Post_Emot__59FA5E80");
+                .HasConstraintName("FK__Posts__Post_Emot__151B244E");
 
             entity.HasOne(d => d.User).WithMany(p => p.Posts)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Posts__UserID__5812160E");
+                .HasConstraintName("FK__Posts__UserID__29221CFB");
         });
 
         modelBuilder.Entity<PostEmotion>(entity =>
         {
-            entity.HasKey(e => e.PostEmotionId).HasName("PK__Post_Emo__E305365C25025E94");
+            entity.HasKey(e => e.PostEmotionId).HasName("PK__Post_Emo__E305365C5B89AE40");
 
             entity.ToTable("Post_Emotion");
 
-            entity.Property(e => e.PostEmotionId).HasColumnName("Post_EmotionID");
+            entity.Property(e => e.PostEmotionId)
+                .ValueGeneratedNever()
+                .HasColumnName("Post_EmotionID");
             entity.Property(e => e.EmotionId).HasColumnName("EmotionID");
 
             entity.HasOne(d => d.Emotion).WithMany(p => p.PostEmotions)
                 .HasForeignKey(d => d.EmotionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Post_Emot__Emoti__52593CB8");
+                .HasConstraintName("FK__Post_Emot__Emoti__619B8048");
         });
 
         modelBuilder.Entity<Report>(entity =>
         {
-            entity.HasKey(e => e.ReportId).HasName("PK__Reports__D5BD48E5305E4670");
+            entity.HasKey(e => e.ReportId).HasName("PK__Reports__D5BD48E532CB8CA4");
 
-            entity.Property(e => e.ReportId).HasColumnName("ReportID");
+            entity.Property(e => e.ReportId)
+                .ValueGeneratedNever()
+                .HasColumnName("ReportID");
             entity.Property(e => e.GeneratedAt).HasColumnType("datetime");
             entity.Property(e => e.ReportType)
                 .IsRequired()
@@ -299,12 +322,12 @@ public partial class SWD392_SNAPPET_DBContext : DbContext
             entity.HasOne(d => d.GeneratedByNavigation).WithMany(p => p.Reports)
                 .HasForeignKey(d => d.GeneratedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Reports__Generat__5535A963");
+                .HasConstraintName("FK__Reports__Generat__70DDC3D8");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC0E87B473");
+            entity.HasKey(e => e.UserId).HasName("PK__tmp_ms_x__1788CCACCB6C8D50");
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.AccountType)
