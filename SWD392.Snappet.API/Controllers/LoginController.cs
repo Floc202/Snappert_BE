@@ -139,7 +139,8 @@ namespace SWD392.Snapper.API.Controllers
             }
 
             // Hash the new password
-            user.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+            //user.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
+            user.Password = model.NewPassword;
 
             // Update the user record in the database
             await _userService.UpdateUserAsync(user);
