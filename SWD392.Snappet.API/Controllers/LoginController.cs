@@ -129,9 +129,13 @@ namespace SWD392.Snapper.API.Controllers
 
             // Verify the old password
 
-            if (!BCrypt.Net.BCrypt.Verify(model.OldPassword, user.Password))
+            //if (!BCrypt.Net.BCrypt.Verify(model.OldPassword, user.Password))
+            //{
+            //    return BadRequest(new { message = "Old password is incorrect" });
+            //}
+            if (model.OldPassword != user.Password)
             {
-                return BadRequest(new { message = "Old password is incorrect" });
+                 return BadRequest(new { message = "Old password is incorrect" });
             }
 
             // Hash the new password
