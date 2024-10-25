@@ -6,9 +6,21 @@ using SWD392.Snappet.Service.Services;
 using System.Text;
 using Microsoft.OpenApi.Models;
 
+var SnappetSpecificOrigins = "_SnappetSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: SnappetSpecificOrigins,
+    policy =>
+    {
+        policy.WithOrigins("*")
+    .AllowAnyHeader()
+    .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddControllers();
 
@@ -37,33 +49,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-//    {
-//        Name = "Authorization",
-//        Type = SecuritySchemeType.Http,
-//        Scheme = "Bearer",
-//        BearerFormat = "JWT",
-//        In = ParameterLocation.Header,
-//        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
-//    });
-
-//    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-//    {
-//        {
-//            new OpenApiSecurityScheme
-//            {
-//                Reference = new OpenApiReference
-//                {
-//                    Type = ReferenceType.SecurityScheme,
-//                    Id = "Bearer"
-//                }
-//            },
-//            new string[] {}
-//        }
-//    });
-//});
 builder.Services.AddSwaggerGen(options =>
 {
     // Add JWT Authentication to Swagger
@@ -126,7 +111,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 //    app.UseSwagger();
 //    app.UseSwaggerUI();
 //};
-
+app.UseCors(SnappetSpecificOrigins);
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using SWD392.Snappet.API.Helpers;
 using SWD392.Snappet.API.RequestModel;
 using SWD392.Snappet.API.ResponseModel;
@@ -6,6 +7,7 @@ using SWD392.Snappet.Service.Services;
 
 namespace SWD392.Snappet.API.Controllers
 {
+   
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
