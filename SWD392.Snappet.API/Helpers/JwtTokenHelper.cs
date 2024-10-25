@@ -26,22 +26,25 @@ namespace SWD392.Snappet.API.Helpers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-
-        public static ClaimsPrincipal ValidateJwtToken(string token, string secretKey)
+        public static string GenerateJwtToken(AdminUser admin, string secret)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(secretKey);
+            var key = Encoding.ASCII.GetBytes(secret);
 
-            var validationParameters = new TokenValidationParameters
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ClockSkew = TimeSpan.Zero
+                Subject = new ClaimsIdentity(new[] {
+            new Claim(ClaimTypes.NameIdentifier, admin.AdminId.ToString()),
+            new Claim(ClaimTypes.Role, admin.Role),
+            new Claim(ClaimTypes.Name, admin.Username)
+        }),
+                Expires = DateTime.UtcNow.AddHours(12),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
-            return tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
+
     }
 }

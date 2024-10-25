@@ -24,9 +24,24 @@ namespace SWD392.Snappet.Service.Services
             var users = await _unitOfWork.Users.GetAllAsync();
             var foundUser = users.FirstOrDefault(u => u.Email == email);
 
-            return foundUser; // return duplicated email if existed or null
-        }
+            if (foundUser == null || password != foundUser.Password)
+            {
+                return null; // Invalid login
+            }
 
+            return foundUser; // Trả về người dùng nếu xác thực thành công
+        }
+        public async Task<AdminUser> AuthenticateAdminAsync(string username, string password)
+        {
+            var adminUsers = await _unitOfWork.AdminUsers.GetAllAsync();
+            var admin = adminUsers.FirstOrDefault(a => a.Username == username);
+            if (admin == null || password != admin.Password)
+            {
+                return null; // Invalid login
+            }
+
+            return admin;
+        }
 
 
     }
