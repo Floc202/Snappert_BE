@@ -46,7 +46,7 @@ namespace SWD392.Snappet.API.Controllers
                     PetId = p.PetId,
                     PetName = p.PetName,
                     ProfilePhotoUrl = p.ProfilePhotoUrl,
-                    Category = p.Category.CategoryName, // Assuming Category is a navigation property
+                    PetCategoryName = p.Category.CategoryName, // Assuming Category is a navigation property
                     OwnerName = u.Username
                 }).ToList() // Populate pet details
             }).ToList();
@@ -80,7 +80,7 @@ namespace SWD392.Snappet.API.Controllers
                     PetId = p.PetId,
                     PetName = p.PetName,
                     ProfilePhotoUrl = p.ProfilePhotoUrl,
-                    Category = p.Category.CategoryName,
+                    PetCategoryName = p.Category.CategoryName,
                     OwnerName = user.Username
                 }).ToList()
             };
@@ -119,7 +119,7 @@ namespace SWD392.Snappet.API.Controllers
                     PetId = p.PetId,
                     PetName = p.PetName,
                     ProfilePhotoUrl = p.ProfilePhotoUrl,
-                    Category = p.Category.CategoryName,
+                    PetCategoryName = p.Category.CategoryName,
                     OwnerName = createdUser.Username
                 }).ToList()
             };

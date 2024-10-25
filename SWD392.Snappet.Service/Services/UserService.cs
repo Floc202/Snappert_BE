@@ -1,4 +1,5 @@
-﻿using SWD392.Snapper.Repository;
+﻿using Microsoft.EntityFrameworkCore;
+using SWD392.Snapper.Repository;
 using SWD392.Snappet.Repository.BusinessModels;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,13 @@ namespace SWD392.Snappet.Service.Services
         public async Task<User> GetUserByIdAsync(int id)
         {
             return await _unitOfWork.Users.GetByIdAsync(id);
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            var userList = await _unitOfWork.Users.GetAllAsync();
+            var filteredUsers = userList.Where(user => user.Email == email).ToList(); // Filter out users with NULL email
+            return filteredUsers.FirstOrDefault();
         }
         public async Task<List<User>> GetAllUsersAsync(string user)
         {

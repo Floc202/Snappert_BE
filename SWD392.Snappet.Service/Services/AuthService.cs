@@ -19,18 +19,12 @@ namespace SWD392.Snappet.Service.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<User> AuthenticateUserAsync(string email, string password)
+        public async Task<User> checkEmailDuplicated(string email)
         {
             var users = await _unitOfWork.Users.GetAllAsync();
             var foundUser = users.FirstOrDefault(u => u.Email == email);
-            
 
-            if (foundUser == null || !BCrypt.Net.BCrypt.Verify(password, foundUser.Password))
-            {
-                return null; // Trả về null nếu không tìm thấy người dùng hoặc mật khẩu không hợp lệ
-            }
-
-            return foundUser; // Trả về người dùng nếu xác thực thành công
+            return foundUser; // return duplicated email if existed or null
         }
 
 

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SWD392.Snapper.Repository;
 using SWD392.Snappet.API.Helpers;
@@ -6,7 +8,11 @@ using SWD392.Snappet.API.RequestModel;
 using SWD392.Snappet.API.ResponseModel;
 using SWD392.Snappet.Repository.BusinessModels;
 using SWD392.Snappet.Service.Services;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity.Data;
+using NuGet.Protocol.Plugins;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace SWD392.Snapper.API.Controllers
 {
@@ -30,39 +36,6 @@ namespace SWD392.Snapper.API.Controllers
         }
 
         // Login API
-        //        [HttpPost("login")]
-        //public async Task<IActionResult> Login([FromBody] LoginRequestModel loginRequest)
-        //{
-        //            var users= await _unitOfWork.Users.GetAllAsync();
-
-        //var foundUser = users.FirstOrDefault(u => u.Email == loginRequest.Email);
-        //            if (foundUser == null)
-        //            {
-        //                return Unauthorized(new { message = "Email not found." });
-        //            }
-        //            /// sau khi đưa vào sẽ kiểm tra null user
-        //            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginRequest.Password, foundUser.Password);
-        //            if (!isPasswordValid)
-        //            {
-        //                return Unauthorized(new { message = "Invalid password." });
-        //            }
-        //            ////
-        //            if (loginRequest == null || string.IsNullOrEmpty(loginRequest.Email) || string.IsNullOrEmpty(loginRequest.Password))
-        //    {
-        //        return BadRequest(new { message = "Email and password must be provided." });
-        //    }
-
-        //    var token = JwtTokenHelper.GenerateJwtToken(foundUser, _config["Jwt:Key"]);
-
-        //    var response = new LoginResponseModel
-        //    {
-        //        Token = token,
-        //        Username = foundUser.Username,
-        //    };
-
-        //    return Ok(response);
-        //}
-        // Login API
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestModel loginRequest)
         {
@@ -72,16 +45,20 @@ namespace SWD392.Snapper.API.Controllers
                 return BadRequest(new { message = "Email and password must be provided." });
             }
 
-            // Sử dụng AuthService để xác thực người dùng
-            var foundUser = await _authService.AuthenticateUserAsync(loginRequest.Email, loginRequest.Password);
+            var foundUser = await _authService.checkEmailDuplicated(loginRequest.Email);
 
             if (foundUser == null)
             {
-                return Unauthorized(new { message = "Invalid email or password." });
+                return BadRequest(new { message = "Email not found." });
             }
 
-            // Tạo token JWT cho người dùng đã xác thực
-            var token = JwtTokenHelper.GenerateJwtToken(foundUser, _config["Jwt:Key"]);
+            if (!PasswordHelper.VerifyPassword(loginRequest.Password, foundUser.hashedPassword, foundUser.salt))
+            {
+                return Unauthorized();
+            }
+
+            // Generate JWT token
+            var token = JwtTokenHelper.GenerateJwtToken(loginRequest.Email, _config["Jwt:Key"]);
 
             // Tạo phản hồi cho đăng nhập
             var response = new LoginResponseModel
@@ -99,16 +76,84 @@ namespace SWD392.Snapper.API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<string>> Register([FromBody] UserRegistrationRequestModel registrationRequest)
         {
-            var result = await _registrationService.RegisterUserAsync(
-            registrationRequest.Username, registrationRequest.Email, registrationRequest.Username, registrationRequest.AccountType);
+            var foundUser = await _authService.checkEmailDuplicated(registrationRequest.Email);
 
-            if (result == "Email already in use.")
+            if (foundUser != null)
             {
-                return BadRequest(result);
+                return BadRequest(new { message = "Email already existed in the system." });
             }
 
-            return Ok(result);
+            // Hash the password and generate a salt
+            var (hashedPassword, salt) = PasswordHelper.HashPassword(registrationRequest.Password);
+            User user = new User
+            {
+                Username = registrationRequest.Username,
+                Email = registrationRequest.Email,
+                Password = "1",
+                hashedPassword = hashedPassword,
+                salt = salt,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                AccountType = "Standard",
+                ExpiredDays = 0
+            };
+            await _unitOfWork.Users.CreateAsync(user);
+            return Ok(new { Message = "User registered successfully." });
         }
+
+        [HttpGet("signin-google")]
+        //[AllowAnonymous]
+        public IActionResult SignInGoogle()
+        {
+            var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleCallback") };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("google-callback")]
+        [ApiExplorerSettings(IgnoreApi = true)]
+        //[AllowAnonymous]
+        public async Task<IActionResult> GoogleCallback()
+        {
+            // Trigger Google authentication if the user isn't already authenticated
+            var authenticateResult = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (!authenticateResult.Succeeded)
+            {
+                return Unauthorized();
+            }
+
+            var claims = authenticateResult.Principal.Identities.FirstOrDefault()?.Claims;
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var name = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+            var foundUser = await _authService.checkEmailDuplicated(email);
+
+            if (foundUser == null)
+            {
+                User user = new User
+                {
+                    Username = name,
+                    Email = email,
+                    Password = "",
+                    hashedPassword = "",
+                    salt = "",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    AccountType = "Standard",
+                    ExpiredDays = 0
+                };
+                await _unitOfWork.Users.CreateAsync(user);
+                var token = JwtTokenHelper.GenerateJwtToken(email, _config["Jwt:Key"]);
+
+                return Ok(new { Token = token });
+            }
+
+            // Generate JWT token for the user
+            var jwtToken = JwtTokenHelper.GenerateJwtToken(email, _config["Jwt:Key"]);
+
+            return Ok(new { Token = jwtToken });
+        }
+
         [Authorize]
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestModel model)
