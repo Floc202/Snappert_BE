@@ -13,12 +13,11 @@ public partial class Post
 
     public string Content { get; set; }
 
-    public int? PhotoId { get; set; }
+    public int PhotoId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
-    public string TagName { get; set; }
-    public int? PostEmotionId { get; set; }
+    public int PostEmotionId { get; set; }
 
     public virtual Photo Photo { get; set; }
 

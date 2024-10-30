@@ -8,6 +8,6 @@
 
         public string PhotoUrl { get; set; }
 
-        public string TagName { get; set; }
+        //public string TagName { get; set; }
     }
 }

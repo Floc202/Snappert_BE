@@ -15,10 +15,11 @@ public partial class Pet
 
     public string ProfilePhotoUrl { get; set; }
 
-    public string Description { get; set; }
     public DateTime CreatedAt { get; set; }
 
     public string PetName { get; set; }
+
+    public string Description { get; set; }
 
     public virtual PetCategory Category { get; set; }
 

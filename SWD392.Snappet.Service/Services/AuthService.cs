@@ -13,7 +13,7 @@ namespace SWD392.Snappet.Service.Services
     public class AuthService
     {
         private readonly UnitOfWork _unitOfWork;
-        private string? password;
+        
 
         public AuthService(UnitOfWork unitOfWork)
         {
@@ -25,7 +25,7 @@ namespace SWD392.Snappet.Service.Services
             var users = await _unitOfWork.Users.GetAllAsync();
             var foundUser = users.FirstOrDefault(u => u.Email == email);
 
-            if (foundUser == null || password != foundUser.Password)
+            if (foundUser == null )
             {
                 return null; // Invalid login
             }

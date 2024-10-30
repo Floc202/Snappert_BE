@@ -45,21 +45,21 @@ namespace SWD392.Snappet.API.Controllers
             return new PostResponse
             {
                 Content = post.Content,
-                TagName = post.TagName,
+                //TagName = post.TagName ?? string.Empty,
                 PhotoUrl = photo?.PhotoUrl,
-                UserName = user?.Username
+                UserName = user?.Username ?? "Uknown User"
             };
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
         {
             var post = await _context.Posts.FindAsync(id);
-            var postResponse = await mapEntityToResponse(post);
 
             if (post == null)
             {
                 return NotFound();
             }
+            var postResponse = await mapEntityToResponse(post);
 
             return Ok(postResponse);
         }
@@ -100,10 +100,11 @@ namespace SWD392.Snappet.API.Controllers
                 PostId = newPostId,
                 UserId = postRequest.UserId,
                 Content = postRequest.Content,
-                PhotoId = photo != null ? photo.PhotoId : null, // Assign the newly created PhotoId
-                TagName = postRequest.TagName,
+                //PhotoId = photo != null ? photo.PhotoId : null, // Assign the newly created PhotoId
+                PhotoId = photo.PhotoId,
+                //TagName = postRequest.TagName,
                 CreatedAt = DateTime.Now,
-                PostEmotionId = null
+                //PostEmotionId = Emotion,
             };
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
@@ -149,8 +150,8 @@ namespace SWD392.Snappet.API.Controllers
             {
                 UserId = postRequest.UserId,
                 Content = postRequest.Content,
-                PhotoId = photo != null ? photo.PhotoId : null, // Assign the newly created PhotoId
-                TagName = postRequest.TagName,
+                PhotoId =  photo.PhotoId  , // Assign the newly created PhotoId
+                //TagName = postRequest.TagName,
                 CreatedAt = DateTime.Now,
                 PostId = id
             };

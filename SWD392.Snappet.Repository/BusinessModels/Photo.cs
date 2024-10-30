@@ -9,7 +9,7 @@ public partial class Photo
 {
     public int PhotoId { get; set; }
 
-    public int? PetId { get; set; }
+    public int PetId { get; set; }
 
     public string PhotoUrl { get; set; }
 
@@ -17,7 +17,8 @@ public partial class Photo
 
     public DateTime CreatedAt { get; set; }
 
-    public bool Status { get; set; }
+    public bool? Status { get; set; }
+
     public virtual Pet Pet { get; set; }
 
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();

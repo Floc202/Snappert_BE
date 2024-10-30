@@ -48,7 +48,7 @@ namespace SWD392.Snappet.API.Controllers
 
             var photos = await _context.Photos.Where(p => p.PetId == pet.PetId).ToListAsync();
 
-            var activePhotos = photos.Where(photo => photo.Status).ToList();
+            var activePhotos = photos.Where(photo => (bool)photo.Status).ToList();
 
             return new PetResponseModel
             {
@@ -186,7 +186,7 @@ namespace SWD392.Snappet.API.Controllers
             foreach (var photo in photos)
             {
                 photo.Status = false;
-                photo.PetId = null;
+                photo.PetId = pet.PetId;
                 _context.Entry(photo).State = EntityState.Modified;
             }
 
