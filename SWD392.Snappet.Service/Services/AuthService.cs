@@ -13,6 +13,7 @@ namespace SWD392.Snappet.Service.Services
     public class AuthService
     {
         private readonly UnitOfWork _unitOfWork;
+        private string? password;
 
         public AuthService(UnitOfWork unitOfWork)
         {

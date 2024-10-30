@@ -44,7 +44,7 @@ namespace SWD392.Snappet.API.Controllers
         private async Task<PetResponseModel> MapToPetResponseModelAsync(Pet pet)
         {
             var category = await _context.PetCategories.FindAsync(pet.CategoryId);
-            var owner = await _context.Users.FindAsync(pet.OwnerId);
+            var owner = await _context.Users.FindAsync(pet.UserId);
 
             var photos = await _context.Photos.Where(p => p.PetId == pet.PetId).ToListAsync();
 
@@ -111,7 +111,7 @@ namespace SWD392.Snappet.API.Controllers
             pet.ProfilePhotoUrl = petRequest.ProfilePhotoUrl;
             pet.CategoryId = petRequest.CategoryId;
             pet.Description = petRequest.Description;
-            pet.OwnerId = petRequest.OwnerId;
+            pet.UserId = petRequest.OwnerId;
 
             _context.Entry(pet).State = EntityState.Modified;
 
@@ -162,7 +162,7 @@ namespace SWD392.Snappet.API.Controllers
                 ProfilePhotoUrl = petRequest.ProfilePhotoUrl,
                 CategoryId = petRequest.CategoryId,
                 Description = petRequest.Description,
-                OwnerId = petRequest.OwnerId,
+                UserId = petRequest.OwnerId,
                 CreatedAt = DateTime.UtcNow // Use UtcNow to avoid SqlDateTime overflow issues
             };
 

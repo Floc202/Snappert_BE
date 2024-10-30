@@ -18,7 +18,6 @@ public partial class Photo
     public DateTime CreatedAt { get; set; }
 
     public bool Status { get; set; }
-
     public virtual Pet Pet { get; set; }
 
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();

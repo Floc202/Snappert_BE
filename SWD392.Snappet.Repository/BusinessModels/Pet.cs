@@ -9,11 +9,12 @@ public partial class Pet
 {
     public int PetId { get; set; }
 
-    public int OwnerId { get; set; }
+    public int UserId { get; set; }
 
     public int CategoryId { get; set; }
 
     public string ProfilePhotoUrl { get; set; }
+
     public string Description { get; set; }
     public DateTime CreatedAt { get; set; }
 
@@ -21,7 +22,7 @@ public partial class Pet
 
     public virtual PetCategory Category { get; set; }
 
-    public virtual User Owner { get; set; }
-
     public virtual ICollection<Photo> Photos { get; set; } = new List<Photo>();
+
+    public virtual User User { get; set; }
 }

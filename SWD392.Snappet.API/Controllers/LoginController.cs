@@ -52,7 +52,7 @@ namespace SWD392.Snapper.API.Controllers
                 return BadRequest(new { message = "Email not found." });
             }
 
-            if (!PasswordHelper.VerifyPassword(loginRequest.Password, foundUser.hashedPassword, foundUser.salt))
+            if (!PasswordHelper.VerifyPassword(loginRequest.Password, foundUser.HashedPassword, foundUser.Salt))
             {
                 return Unauthorized();
             }
@@ -90,8 +90,8 @@ namespace SWD392.Snapper.API.Controllers
                 Username = registrationRequest.Username,
                 Email = registrationRequest.Email,
                 Password = "1",
-                hashedPassword = hashedPassword,
-                salt = salt,
+                HashedPassword = hashedPassword,
+                Salt = salt,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 AccountType = "Standard",
@@ -135,8 +135,8 @@ namespace SWD392.Snapper.API.Controllers
                     Username = name,
                     Email = email,
                     Password = "",
-                    hashedPassword = "",
-                    salt = "",
+                    HashedPassword = "",
+                    Salt = "",
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                     AccountType = "Standard",
