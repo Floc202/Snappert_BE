@@ -19,16 +19,11 @@ namespace SWD392.Snappet.Service.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<User> AuthenticateUserAsync(string email, string password)
+        public async Task<User> checkEmailDuplicated(string email)
         {
             var users = await _unitOfWork.Users.GetAllAsync();
             var foundUser = users.FirstOrDefault(u => u.Email == email);
 
-
-            //if (foundUser == null || !BCrypt.Net.BCrypt.Verify(password, foundUser.Password))
-            //{
-            //    return null; // Trả về null nếu không tìm thấy người dùng hoặc mật khẩu không hợp lệ
-            //}
             if (foundUser == null || password != foundUser.Password)
             {
                 return null; // Invalid login
@@ -40,11 +35,6 @@ namespace SWD392.Snappet.Service.Services
         {
             var adminUsers = await _unitOfWork.AdminUsers.GetAllAsync();
             var admin = adminUsers.FirstOrDefault(a => a.Username == username);
-
-            //if (admin == null || !BCrypt.Net.BCrypt.Verify(password, admin.Password))
-            //{
-            //    return null; // Invalid login
-            //}
             if (admin == null || password != admin.Password)
             {
                 return null; // Invalid login

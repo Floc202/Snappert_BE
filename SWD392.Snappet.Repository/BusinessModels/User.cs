@@ -13,7 +13,7 @@ public partial class User
 
     public string Email { get; set; }
 
-    public string Password { get; set; }
+    public string? Password { get; set; }
 
     public string AccountType { get; set; }
 
@@ -22,8 +22,10 @@ public partial class User
     public DateTime UpdatedAt { get; set; }
 
     public int ExpiredDays { get; set; }
+    public string salt { get; set; }
+    public string hashedPassword { get; set; }
 
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+    public virtual ICollection<Order> Orders{ get; set; } = new List<Order>();
 
     public virtual ICollection<Package> Packages { get; set; } = new List<Package>();
 
