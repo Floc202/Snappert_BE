@@ -56,6 +56,11 @@ namespace SWD392.Snapper.API.Controllers
             {
                 return Unauthorized();
             }
+            foreach (var claim in User.Claims)
+            {
+                Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+            }
+
 
             // Generate JWT token
             var token = JwtTokenHelper.GenerateJwtToken(loginRequest.Email, _config["Jwt:Key"]);
@@ -89,7 +94,7 @@ namespace SWD392.Snapper.API.Controllers
             {
                 Username = registrationRequest.Username,
                 Email = registrationRequest.Email,
-                Password = "1",
+                Password = registrationRequest.Password,
                 HashedPassword = hashedPassword,
                 Salt = salt,
                 CreatedAt = DateTime.UtcNow,
@@ -158,39 +163,52 @@ namespace SWD392.Snapper.API.Controllers
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestModel model)
         {
-            // Extract the User ID from the JWT token
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!int.TryParse(userIdClaim, out int userId))
+           
+
+            // Check if the old and new passwords are provided
+            if (string.IsNullOrWhiteSpace(model.OldPassword) || string.IsNullOrWhiteSpace(model.NewPassword))
             {
-                return BadRequest(new { message = "Invalid user ID" });
+                return BadRequest(new { message = "Passwords cannot be empty" });
             }
 
-            // Get the user by ID
-            var user = await _userService.GetUserByIdAsync(userId);
-            if (user == null)
+            try
             {
-                return NotFound(new { message = "User not found" });
+                if (model == null || model.UserId <= 0 || string.IsNullOrEmpty(model.NewPassword))
+                {
+                    return BadRequest(new { message = "User ID and new password must be provided." });
+                }
+
+                // Get the user by ID
+                var user = await _userService.GetUserByIdAsync(model.UserId);
+                if (user == null)
+                {
+                    return NotFound(new { message = "User not found" });
+                }
+
+                // Verify the old password using the stored salt and hashed password
+                if (!PasswordHelper.VerifyPassword(model.OldPassword, user.HashedPassword, user.Salt))
+                {
+                    return BadRequest(new { message = "Old password is incorrect" });
+                }
+
+                // Hash the new password and update the salt
+                var (newHashedPassword, newSalt) = PasswordHelper.HashPassword(model.NewPassword);
+                user.HashedPassword = newHashedPassword;
+                user.Salt = newSalt;
+
+                // Update the user record in the database
+                await _userService.UpdateUserAsync(user);
+
+                return Ok(new { message = "Password updated successfully" });
             }
-
-            // Verify the old password
-
-            //if (!BCrypt.Net.BCrypt.Verify(model.OldPassword, user.Password))
-            //{
-            //    return BadRequest(new { message = "Old password is incorrect" });
-            //}
-            if (model.OldPassword != user.Password)
+            catch (Exception ex)
             {
-                 return BadRequest(new { message = "Old password is incorrect" });
+                // Log the exception details (you can log it using a logging framework)
+                return StatusCode(500, new { message = "An error occurred while updating the password", details = ex.Message });
             }
-
-            // Hash the new password
-            user.Password = BCrypt.Net.BCrypt.HashPassword(model.NewPassword);
-
-            // Update the user record in the database
-            await _userService.UpdateUserAsync(user);
-
-            return Ok(new { message = "Password updated successfully" });
         }
+
+
 
     }
 }

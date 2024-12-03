@@ -13,51 +13,48 @@ namespace SWD392.Snappet.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class OrdersController : ControllerBase
+
+    public class PackagesController : ControllerBase
     {
         private readonly SWD392_SNAPPET_DBContext _context;
 
-        public OrdersController(SWD392_SNAPPET_DBContext context)
+        public PackagesController(SWD392_SNAPPET_DBContext context)
         {
             _context = context;
         }
-        //[HttpGet]
-        //public IActionResult GetSecureData()
-        //{
-        //    return Ok("This is protected data.");
-        //}
-        // GET: api/Orders
+
+        // GET: api/Packages
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<Package>>> GetPackages()
         {
-            return await _context.Orders.ToListAsync();
+            return await _context.Packages.ToListAsync();
         }
 
-        // GET: api/Orders/5
+        // GET: api/Packages/5
         //[HttpGet("{id}")]
-        //public async Task<ActionResult<Order>> GetOrder(int id)
+        //public async Task<ActionResult<Package>> GetPackage(int id)
         //{
-        //    var order = await _context.Orders.FindAsync(id);
+        //    var package = await _context.Packages.FindAsync(id);
 
-        //    if (order == null)
+        //    if (package == null)
         //    {
         //        return NotFound();
         //    }
 
-        //    return order;
+        //    return package;
         //}
 
-        // PUT: api/Orders/5
+        // PUT: api/Packages/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(int id, Order order)
+        public async Task<IActionResult> PutPackage(int id, Package package)
         {
-            if (id != order.OrderId)
+            if (id != package.PackageId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(order).State = EntityState.Modified;
+            _context.Entry(package).State = EntityState.Modified;
 
             try
             {
@@ -65,7 +62,7 @@ namespace SWD392.Snappet.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!OrderExists(id))
+                if (!PackageExists(id))
                 {
                     return NotFound();
                 }
@@ -78,37 +75,36 @@ namespace SWD392.Snappet.API.Controllers
             return NoContent();
         }
 
-        // POST: api/Orders
+        // POST: api/Packages
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         //[HttpPost]
-        //public async Task<ActionResult<Order>> PostOrder(Order order)
+        //public async Task<ActionResult<Package>> PostPackage(Package package)
         //{
-        //    _context.Orders.Add(order);
+        //    _context.Packages.Add(package);
         //    await _context.SaveChangesAsync();
 
-        //    return CreatedAtAction("GetOrder", new { id = order.OrderId }, order);
+        //    return CreatedAtAction("GetPackage", new { id = package.PackageId }, package);
         //}
 
-        // DELETE: api/Orders/5
+        // DELETE: api/Packages/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(int id)
+        public async Task<IActionResult> DeletePackage(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
+            var package = await _context.Packages.FindAsync(id);
+            if (package == null)
             {
                 return NotFound();
             }
 
-            _context.Orders.Remove(order);
+            _context.Packages.Remove(package);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool OrderExists(int id)
+        private bool PackageExists(int id)
         {
-            return _context.Orders.Any(e => e.OrderId == id);
+            return _context.Packages.Any(e => e.PackageId == id);
         }
-        
     }
 }

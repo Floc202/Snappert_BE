@@ -4,6 +4,7 @@ using SWD392.Snappet.API.RequestModel;
 using SWD392.Snappet.API.ResponseModel;
 using SWD392.Snappet.Repository.BusinessModels;
 using SWD392.Snappet.Service.Services;
+using System.Security.Claims;
 
 namespace SWD392.Snappet.API.Controllers
 {
@@ -88,44 +89,7 @@ namespace SWD392.Snappet.API.Controllers
             return Ok(response);
         }
 
-        /// <summary>
-        /// Creates a new user.
-        /// </summary>
-        [HttpPost]
-        public async Task<ActionResult<UserResponseModel>> CreateUser([FromBody] UserRequestModel userRequest)
-        {
-            var user = new User
-            {
-                Username = userRequest.Username,
-                Email = userRequest.Email,
-                Password = userRequest.Password, // Ensure you hash this password
-                AccountType = userRequest.AccountType
-            };
-
-            var createdUserId = await _userService.CreateUserAsync(user);
-            var createdUser = await _userService.GetUserByIdAsync(createdUserId);
-
-            var response = new UserResponseModel
-            {
-                UserId = createdUser.UserId,
-                Username = createdUser.Username,
-                Email = createdUser.Email,
-                AccountType = createdUser.AccountType,
-                CreatedAt = createdUser.CreatedAt,
-                UpdatedAt = createdUser.UpdatedAt,
-                ExpiredDays = createdUser.ExpiredDays,
-                Pets = createdUser.Pets.Select(p => new PetResponseModel
-                {
-                    PetId = p.PetId,
-                    PetName = p.PetName,
-                    ProfilePhotoUrl = p.ProfilePhotoUrl,
-                    PetCategoryName = p.Category.CategoryName,
-                    OwnerName = createdUser.Username
-                }).ToList()
-            };
-
-            return CreatedAtAction(nameof(GetUserById), new { id = createdUser.UserId }, response);
-        }
+        
 
         /// <summary>
         /// Updates an existing user.
@@ -133,18 +97,22 @@ namespace SWD392.Snappet.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserRequestModel userRequest)
         {
-            var user = new User
+            var existingUser = await _userService.GetUserByIdAsync(id);
+            if (existingUser == null)
             {
-                UserId = id,
-                Username = userRequest.Username,
-                Email = userRequest.Email,
-                Password = userRequest.Password, // Ensure to hash this
-                AccountType = userRequest.AccountType
-            };
+                return NotFound(); // Return 404 if user doesn't exist
+            }
 
-            await _userService.UpdateUserAsync(user);
+            existingUser.Username = !string.IsNullOrEmpty(userRequest.Username) ? userRequest.Username : existingUser.Username;
+            existingUser.Email = !string.IsNullOrEmpty(userRequest.Email) ? userRequest.Email : existingUser.Email;
+            existingUser.AccountType = !string.IsNullOrEmpty(userRequest.AccountType) ? userRequest.AccountType : existingUser.AccountType;
+            existingUser.UpdatedAt = DateTime.Now;
+
+            await _userService.UpdateUserAsync(existingUser);
             return NoContent();
         }
+       
+
 
         /// <summary>
         /// Deletes a user by ID.

@@ -17,6 +17,7 @@ namespace SWD392.Snappet.API.Helpers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
+
                 new Claim(ClaimTypes.Name, username)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),

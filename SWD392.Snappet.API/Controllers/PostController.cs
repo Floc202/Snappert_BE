@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SWD392.Snappet.API.RequestModel;
 using SWD392.Snappet.API.ResponseModel;
@@ -11,6 +12,7 @@ namespace SWD392.Snappet.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PostController : ControllerBase
     {
         private readonly SWD392_SNAPPET_DBContext _context;

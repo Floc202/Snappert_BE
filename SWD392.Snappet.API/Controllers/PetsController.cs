@@ -43,28 +43,30 @@ namespace SWD392.Snappet.API.Controllers
 
         private async Task<PetResponseModel> MapToPetResponseModelAsync(Pet pet)
         {
-            var category = await _context.PetCategories.FindAsync(pet.CategoryId);
-            var owner = await _context.Users.FindAsync(pet.UserId);
+            //var category = await _context.PetCategories.FindAsync(pet.CategoryId);
+            //var owner = await _context.Users.FindAsync(pet.UserId);
 
             var photos = await _context.Photos.Where(p => p.PetId == pet.PetId).ToListAsync();
 
-            var activePhotos = photos.Where(photo => (bool)photo.Status).ToList();
+            //var activePhotos = photos.Where(photo => (bool)photo.Status).ToList();
 
             return new PetResponseModel
             {
                 PetId = pet.PetId,
                 PetName = pet.PetName,
                 ProfilePhotoUrl = pet.ProfilePhotoUrl,
-                PetCategoryName = category?.CategoryName,
-                OwnerName = owner?.Username,
+                PetCategoryName = pet.Category?.CategoryName ?? "Unknow",
+                OwnerName = pet.User?.Username ?? "Unknow",
                 CreatedAt = pet.CreatedAt,
                 Description = pet.Description,
-                Photos = activePhotos.Select(photo => new Photo
+                Photos = pet.Photos.Select(photo => new Photo
                 {
-                    PhotoId = photo.PhotoId,
-                    PhotoUrl = photo.PhotoUrl,
-                    Tags = photo.Tags
-                }).ToList()
+                    PhotoId = photo.PhotoId, // Non-nullable
+                    PhotoUrl = photo.PhotoUrl ?? "default-url.jpg", // Default for null PhotoUrl
+                    Tags = photo.Tags ?? string.Empty, // Default to empty string if null
+                    CreatedAt = photo.CreatedAt, // Non-nullable
+                    Status = photo.Status ?? false // Default to false if Status is null
+                }).ToList(),
             };
         }
 
